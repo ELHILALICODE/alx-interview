@@ -1,61 +1,61 @@
 #!/usr/bin/python3
-""" Prime Game """
+"""
+Prime Game module
+"""
 
-
-def isprime(n):
-    """ Return prime number """
-    for i in range(2, n):
-        if n % i == 0:
+def is_prime(num):
+    """Check if a number is a prime number"""
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
             return False
     return True
 
-
-def delete_numbers(n, nums):
-    """ Remove numbers - return zero """
-    for i in range(len(nums)):
-        if nums[i] % n == 0:
-            nums[i] = 0
-
+def generate_primes(n):
+    """Generate a list of prime numbers up to n"""
+    primes = []
+    for i in range(2, n + 1):
+        if is_prime(i):
+            primes.append(i)
+    return primes
 
 def isWinner(x, nums):
-    """ Return name of player that won
-    most rounds
     """
-    nums.sort()
-    winner = False
-    Maria = 0
-    Ben = 0
-    for game in range(x):
-        # prints("game# ", game+1)
-        nums2 = list(range(1, nums[game] + 1))
-        # print("nums: ", nums2)
-        turn = 0
-        while True:
-            """
-            # monitor turns, uncomment to watch
-            if turn % 2 != 0:
-                print("Ben turn ")
-            else:
-                print("Maria turn ")
-            """
-            change = False
-            for i, n in enumerate(nums2):
-                # print("n: ", n, "i: ", i)
-                if n > 1 and isprime(n):
-                    delete_numbers(n, nums2)
-                    change = True
-                    turn += 1
-                    break
-            # print("movement: ". nums2)
-            if change is False:
-                break
-        if turn % 2 != 0:
-            Maria += 1
-        else:
-            Ben += 1
-        # print("Maria: {}, Ben: {}".format(Maria, Ben))
-    if Maria == Ben:
+    Determines the winner of the Prime Game
+
+    x: number of rounds
+    nums: list of numbers for each round
+
+    Returns:
+        Name of the player that won the most rounds, or None if it's a tie
+    """
+    if not nums or x < 1:
         return None
-    if Maria > Ben:
+
+    maria_score = 0
+    ben_score = 0
+
+    for n in nums[:x]:
+        primes = generate_primes(n)
+        if not primes:
+            ben_score += 1
+            continue
+
+        turn = 0  # 0 for Maria, 1 for Ben
+        while primes:
+            # Maria's and Ben's turns alternately
+            primes = [p for p in primes if p % primes[0] != 0]
+            turn = 1 - turn
+
+        if turn == 1:  # Ben couldn't play
+            maria_score += 1
+        else:
+            ben_score += 1
+
+    if maria_score > ben_score:
         return "Maria"
-    return "Ben"
+    elif ben_score > maria_score:
+        return "Ben"
+    else:
+        return None
